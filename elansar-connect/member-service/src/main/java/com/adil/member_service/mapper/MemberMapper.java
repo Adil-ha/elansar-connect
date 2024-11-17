@@ -18,10 +18,9 @@ public class MemberMapper {
                 .lastname(member.getLastname())
                 .firstname(member.getFirstname())
                 .dateOfBirth(member.getDateOfBirth())
-                .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
                 .email(member.getEmail())
-                .contributionStatus(String.valueOf(member.getContributionStatus()))
+                .contributionStatus(member.getContributionStatus())
                 .createdAt(member.getCreatedAt())
                 .build();
     }
@@ -35,10 +34,9 @@ public class MemberMapper {
                 .lastname(memberDTO.getLastname())
                 .firstname(memberDTO.getFirstname())
                 .dateOfBirth(memberDTO.getDateOfBirth())
-                .address(memberDTO.getAddress())
                 .phoneNumber(memberDTO.getPhoneNumber())
                 .email(memberDTO.getEmail())
-                .contributionStatus(ContributionStatus.valueOf(memberDTO.getContributionStatus()))
+                .contributionStatus(memberDTO.getContributionStatus())
                 .createdAt(memberDTO.getCreatedAt())
                 .build();
     }

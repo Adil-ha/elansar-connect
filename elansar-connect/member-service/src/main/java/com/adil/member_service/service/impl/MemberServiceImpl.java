@@ -2,6 +2,7 @@ package com.adil.member_service.service.impl;
 
 import com.adil.member_service.dto.MemberDTO;
 import com.adil.member_service.entity.Member;
+import com.adil.member_service.entity.enums.ContributionStatus;
 import com.adil.member_service.exception.MemberAlreadyExistsException;
 import com.adil.member_service.exception.MemberNotFoundException;
 import com.adil.member_service.mapper.MemberMapper;
@@ -32,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
         }
         Member member = memberMapper.toEntity(memberDTO);
         member.setCreatedAt(LocalDate.from(LocalDateTime.now()));
+        member.setContributionStatus(ContributionStatus.UNPAID);
         Member savedMember = memberRepository.save(member);
         return memberMapper.toDTO(savedMember);
     }
@@ -62,6 +64,17 @@ public class MemberServiceImpl implements MemberService {
         memberToUpdate.setId(id); // S'assurer que l'ID est celui du membre existant
         Member updatedMember = memberRepository.save(memberToUpdate);
         return memberMapper.toDTO(updatedMember);
+    }
+
+    @Override
+    public MemberDTO updateContributionStatus(Long id, ContributionStatus contributionStatus) {
+        return memberRepository.findById(id)
+                .map(member -> {
+                    member.setContributionStatus(contributionStatus);
+                    return memberRepository.save(member);
+                })
+                .map(memberMapper::toDTO)
+                .orElseThrow(() -> new MemberNotFoundException(id));
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @SpringBootApplication
 @EnableFeignClients
+@EnableScheduling
 @AllArgsConstructor
 public class PaymentServiceApplication {
 
@@ -34,45 +36,43 @@ public class PaymentServiceApplication {
 	@Bean
 	CommandLineRunner initDatabase() {
 		return args -> {
+			// Récupérer tous les membres et les contributions existantes
 			List<MemberDTO> memberDTOCollection = memberRestClient.getAllMembers();
 			List<ContributionDTO> existingContributions = contributionService.getAllContributions();
 
-			memberDTOCollection.forEach(m->{
-				if (existingContributions.isEmpty()) {
-					ContributionDTO contribution1 = ContributionDTO.builder()
+			// Vérifier s'il y a déjà des contributions
+			if (!existingContributions.isEmpty()) {
+				System.out.println("Contributions already exist in the database. No new records inserted.");
+				return;
+			}
+
+			// Parcourir chaque membre pour générer des contributions
+			memberDTOCollection.forEach(m -> {
+				BigDecimal totalPaid = BigDecimal.ZERO;
+
+				// Créer des contributions mensuelles pour simuler un membre qui paye progressivement
+				for (int month = 1; month <= 12; month++) {
+					// Vérifier si le total payé dépasse 120 €
+					if (totalPaid.compareTo(new BigDecimal("120.00")) >= 0) {
+						System.out.println("Member " + m.getId() + " has already paid the maximum for the year.");
+						break;
+					}
+
+					// Ajouter une contribution mensuelle de 10 €
+					ContributionDTO contribution = ContributionDTO.builder()
 							.amount(new BigDecimal("10.00"))
-							.datePayment(LocalDate.now())
 							.typePayment(PaymentType.MONTHLY)
 							.modePayment(PaymentMode.CASH)
 							.idMember(m.getId())
 							.build();
 
-					ContributionDTO contribution2 = ContributionDTO.builder()
-							.amount(new BigDecimal("40.00"))
-							.datePayment(LocalDate.now())
-							.typePayment(PaymentType.QUARTERLY)
-							.modePayment(PaymentMode.CARD)
-							.idMember(m.getId())
-							.build();
-
-					ContributionDTO contribution3 = ContributionDTO.builder()
-							.amount(new BigDecimal("120.00"))
-							.datePayment(LocalDate.now())
-							.typePayment(PaymentType.ANNUAL)
-							.modePayment(PaymentMode.CASH)
-							.idMember(m.getId())
-							.build();
-
-					contributionService.createContribution(contribution1);
-					contributionService.createContribution(contribution2);
-					contributionService.createContribution(contribution3);
-
-					System.out.println("Initial contributions inserted into the database.");
-				} else {
-					System.out.println("Contributions already exist in the database. No new records inserted.");
+					contributionService.createContribution(contribution);
+					totalPaid = totalPaid.add(contribution.getAmount());
 				}
-			});
 
+				System.out.println("Contributions for Member " + m.getId() + " inserted into the database.");
+			});
 		};
 	}
+
 }

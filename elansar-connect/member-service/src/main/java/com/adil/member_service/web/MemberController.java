@@ -1,6 +1,7 @@
 package com.adil.member_service.web;
 
 import com.adil.member_service.dto.MemberDTO;
+import com.adil.member_service.dto.UpdateContributionStatusRequest;
 import com.adil.member_service.service.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,14 @@ public class MemberController {
     @PutMapping("/{id}")
     public ResponseEntity<MemberDTO> updateMember(@PathVariable Long id, @RequestBody MemberDTO memberDTO) {
         MemberDTO updatedMember = memberService.updateMember(id, memberDTO);
+        return ResponseEntity.ok(updatedMember);
+    }
+
+    @PutMapping("/{id}/contributionStatus")
+    public ResponseEntity<MemberDTO> updateContributionStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateContributionStatusRequest request) {
+        MemberDTO updatedMember = memberService.updateContributionStatus(id, request.getContributionStatus());
         return ResponseEntity.ok(updatedMember);
     }
 

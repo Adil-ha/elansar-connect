@@ -1,5 +1,6 @@
 package com.adil.payment_service.dto;
 
+import com.adil.payment_service.entity.enums.ContributionStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -14,9 +15,8 @@ public class MemberDTO {
     private String lastname;
     private String firstname;
     private LocalDate dateOfBirth;
-    private String address;
     private String phoneNumber;
     private String email;
-    private String contributionStatus;
+    private ContributionStatus contributionStatus;
     private LocalDate createdAt;
 }

@@ -24,8 +24,6 @@ public class Member {
     @Column(name = "date_birth")
     private LocalDate dateOfBirth;
 
-    private String address;
-
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
